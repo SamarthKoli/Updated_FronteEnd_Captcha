@@ -103,10 +103,11 @@ const Login = () => {
 
                         if (probability <= 0.4) {
                             navigate('/success'); // Redirect to the success page
+                           
                         } else if (probability > 0.4 && probability <= 0.6) {
                             navigate('/active-captcha');
                         } else {
-                            alert("Looks like you're not a human! Try again!!!")
+                            navigate('/active-captcha');
                             setKeystrokeCount(0)
                             setMouseMovementCount(0)
                             setStartTime(Date.now())

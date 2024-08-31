@@ -102,7 +102,8 @@ const Login = () => {
                         const {probability} = result
 
                         if (probability <= 0.4) {
-                            navigate('/success'); // Redirect to the success page
+                          navigate("/success")
+
                            
                         } else if (probability > 0.4 && probability <= 0.6) {
                             navigate('/active-captcha');
@@ -156,7 +157,7 @@ const Login = () => {
                     ref={slideSubmitRef} 
                     style={{ pointerEvents: 'none', opacity: '0.5' }}
                 >
-                    <div className="slide-submit-text">Slide To Submit</div>
+                    <div className="slide-submit-text">Slide To Submit </div>
                     <div 
                         className="slide-submit-thumb" 
                         ref={slideThumbRef} 

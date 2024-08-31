@@ -152,7 +152,8 @@ function GridCaptcha() {
   
     if (isConnected && inputKeys === requiredKeys && isHuman) {
       console.log("CAPTCHA passed: Detected as human.");
-      navigate("/success");
+        navigate("/success")
+
       setCaptchaCompleted(true);
     } else {
       console.log("CAPTCHA failed: Detected as bot.");

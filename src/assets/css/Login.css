@@ -9,12 +9,17 @@ body {
 }
 
 .container {
+  display: flex;
+  flex-direction: column; /* Allows vertical alignment of content */
+  justify-content: center; /* Centers content vertically within container */
+  align-items: center; /* Centers content horizontally within container */
   text-align: center;
   background: #fff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 300px;
+  width: 500px;
+  height: 500px;
 }
 
 label {
@@ -23,7 +28,7 @@ label {
 }
 
 input[type="text"] {
-  width: 70%;
+  width: 80%;
   padding: 10px;
   font-size: 16px;
   border: 1px solid #ddd;
@@ -44,8 +49,7 @@ input[type="text"] {
   background: white;
   padding: 4px;
   border: 1px solid #dddddd;
-  margin-top: 20px;
-  margin-left: 20px;
+  margin: 20px auto 0; /* Centers the slider horizontally */
 }
 
 .slide-submit .slide-submit-thumb {
@@ -54,6 +58,7 @@ input[type="text"] {
   left: 0;
   width: 50px;
   height: 100%;
+  content: ">>";
   background: #dd3a3a;
   color: white;
   text-align: center;
@@ -80,6 +85,7 @@ input[type="text"] {
 }
 
 .container img {
+  top: 0;
   width: 30%;
   height: 20%;
 }

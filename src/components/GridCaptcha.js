@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Footer from './footer';
+import Header from './header';
 
 function GridCaptcha() {
   const [shapes, setShapes] = useState([]);
@@ -24,7 +26,6 @@ function GridCaptcha() {
     const generateRandomShapes = () => {
       let newShapes = Array(gridSize * gridSize).fill(null);
 
-      // Decide the pattern: 0 = both circles, 1 = one circle + one circle text, 2 = one circle text + one circle, 3 = both circle text
       const patternType = Math.floor(Math.random() * 4);
 
       let circleIndices = [];
@@ -60,7 +61,7 @@ function GridCaptcha() {
 
     generateRandomShapes();
     generateRandomKeys();
-    setStartTime(Date.now()); // Capture the start time when the CAPTCHA is displayed
+    setStartTime(Date.now());
 
     const countdown = setInterval(() => {
       setTimer(prevTimer => {
@@ -75,7 +76,6 @@ function GridCaptcha() {
     return () => clearInterval(countdown);
   }, [navigate]);
 
-  // Capture mouse movements
   useEffect(() => {
     const handleMouseMove = (e) => {
       setMouseMovements((prevMovements) => [
@@ -111,55 +111,50 @@ function GridCaptcha() {
   const handleSubmit = () => {
     const endTime = Date.now();
     const timeTaken = (endTime - startTime) / 1000; // Calculate time taken in seconds
-  
-    // Bot detection algorithm
+
     const analyzeMouseMovements = (movements) => {
       let speedVariations = [];
       let timeIntervals = [];
       let straightLineCount = 0;
-    
+
       for (let i = 1; i < movements.length; i++) {
         const dx = movements[i].x - movements[i - 1].x;
         const dy = movements[i].y - movements[i - 1].y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         const timeDelta = movements[i].time - movements[i - 1].time;
-    
+
         if (timeDelta > 0) {
           const speed = distance / timeDelta;
           speedVariations.push(speed);
           timeIntervals.push(timeDelta);
         }
-    
-        // Check if movement is a straight line
+
         if (dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy)) {
           straightLineCount++;
         }
       }
-    
+
       const avgSpeed = speedVariations.reduce((a, b) => a + b, 0) / speedVariations.length;
       const avgTimeInterval = timeIntervals.reduce((a, b) => a + b, 0) / timeIntervals.length;
-    
+
       const speedVariance = speedVariations.reduce((sum, s) => sum + Math.pow(s - avgSpeed, 2), 0) / speedVariations.length;
       const timeVariance = timeIntervals.reduce((sum, t) => sum + Math.pow(t - avgTimeInterval, 2), 0) / timeIntervals.length;
-    
-      // New condition to check if average time interval exceeds 15 seconds
+
       const isHuman = speedVariance > 0.02 && timeVariance > 100 && straightLineCount < movements.length * 0.75 && avgTimeInterval <= 15000;
-    
+
       return isHuman;
     };
-    
+
     const isHuman = analyzeMouseMovements(mouseMovements);
-  
+
     if (isConnected && inputKeys === requiredKeys && isHuman) {
       console.log("CAPTCHA passed: Detected as human.");
-        navigate("/success")
-
+      navigate("/success");
       setCaptchaCompleted(true);
     } else {
       console.log("CAPTCHA failed: Detected as bot.");
     }
-  
-    // Log mouse movements and time taken
+
     console.log('Mouse Movements:', mouseMovements);
     console.log('Time Taken to Solve CAPTCHA:', timeTaken, 'seconds');
     console.log('Human Detection Result:', isHuman ? 'Human' : 'Bot');
@@ -173,7 +168,6 @@ function GridCaptcha() {
   const renderShape = (shape, index) => {
     const shapeStyles = {
       circle: styles.circle,
-      // 'circle-text': styles.circleText,
       square: styles.square,
       triangle: styles.triangle,
       hexagon: styles.hexagon,
@@ -191,73 +185,73 @@ function GridCaptcha() {
   };
 
   return (
-    <div style={styles.container}>
-      <header style={styles.header}>
-        <img src="aadhar_logo.png" alt="Logo" style={styles.logo} />
-      </header>
-      <div style={styles.captchaContainer}>
-        <h2>Connect the Circle</h2>
-        <div style={styles.gridContainer(gridSize)}>
-          {shapes.map((shape, index) => renderShape(shape, index))}
-          {isConnected && selectedDots.length === 2 && (
-            <svg style={styles.lineContainer}>
-              <line
-                x1={((selectedDots[0] % gridSize) * 60) + 30}
-                y1={Math.floor(selectedDots[0] / gridSize) * 60 + 30}
-                x2={((selectedDots[1] % gridSize) * 60) + 30}
-                y2={Math.floor(selectedDots[1] / gridSize) * 60 + 30}
-                stroke="black"
-                strokeWidth="2"
-              />
-            </svg>
-          )}
-        </div>
+    <div style={styles.pageContainer}>
+      <Header /> {/* Properly place Header here */}
 
-        {isConnected && (
-          <div>
-            <h3>Enter the following key combination: '{requiredKeys}'</h3>
-            <input
-              type="text"
-              value={inputKeys}
-              onChange={handleInputChange}
-              placeholder="Enter the key combination"
-              style={styles.input}
-            />
+      <div style={styles.container}>
+        <div style={styles.captchaContainer}>
+          <h2>Connect the Circle</h2>
+          <div style={styles.gridContainer(gridSize)}>
+            {shapes.map((shape, index) => renderShape(shape, index))}
+            {isConnected && selectedDots.length === 2 && (
+              <svg style={styles.lineContainer}>
+                <line
+                  x1={((selectedDots[0] % gridSize) * 60) + 30}
+                  y1={Math.floor(selectedDots[0] / gridSize) * 60 + 30}
+                  x2={((selectedDots[1] % gridSize) * 60) + 30}
+                  y2={Math.floor(selectedDots[1] / gridSize) * 60 + 30}
+                  stroke="black"
+                  strokeWidth="2"
+                />
+              </svg>
+            )}
           </div>
-        )}
 
-        <button
-          onClick={handleSubmit}
-          disabled={!isConnected || inputKeys !== requiredKeys}
-          style={styles.submitButton}
-        >
-          Submit CAPTCHA
-        </button>
+          {isConnected && (
+            <div>
+              <h3>Enter the following key combination: '{requiredKeys}'</h3>
+              <input
+                type="text"
+                value={inputKeys}
+                onChange={handleInputChange}
+                placeholder="Enter the key combination"
+                style={styles.input}
+              />
+            </div>
+          )}
 
-        {captchaCompleted && <p>CAPTCHA passed!</p>}
+          <button
+            onClick={handleSubmit}
+            disabled={!isConnected || inputKeys !== requiredKeys}
+            style={styles.submitButton}
+          >
+            Submit CAPTCHA
+          </button>
 
-        <div>
-          <p>Time remaining: {timer} seconds</p>
+          {captchaCompleted && <p>CAPTCHA passed!</p>}
+
+          <div>
+            <p>Time remaining: {timer} seconds</p>
+          </div>
         </div>
       </div>
+
+      <Footer /> {/* Properly place Footer here */}
     </div>
   );
 }
 
 const styles = {
-  container: {
+  pageContainer: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
     minHeight: '100vh',
-    padding: '20px',
   },
-  header: {
-    marginBottom: '20px',
-  },
-  logo: {
-    width: '150px',
+  container: {
+    flex: 1,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   captchaContainer: {
     maxWidth: '500px',
